@@ -1,30 +1,51 @@
-﻿import requests
-from beautifultable import  BeautifulTable
-try: 
-    table = BeautifulTable()
-    API_key = "9fed8863a2be30ce1cbecb13f6b57d0b"
-    city = input("\nEnter the City: ")
-    url = "http://api.openweathermap.org/data/2.5/weather?q="+city+"&appid="+API_key+"&lang = fa"
-    data = requests.get(url).json()
+import json
+import tkinter as tk
+from tkinter import font
+import requests
+import time
 
-    weather = data["weather"][0]["description"]
-    wind_speed = str(data["wind"]["speed"]) + " m/s"
-    temp = str(round(data["main"]["temp"] - 273.15)) + " °C"
-    humidity = str(data["main"]["humidity"]) + " %"
-    timezone = str(data["timezone"] / 3600) + " h"
+#get weather API
+def getWeather(canvas):
+    city = textField.get()
+    api = "http://api.openweathermap.org/data/2.5/weather?q="+ city +"&APPID=d5199b9b1dbe981c7a5ec22e425452f7"
+    json_data = requests.get(api).json()
 
-    print("")
-    table.columns.header = [city.title()]
-    table.rows.append([weather])
-    table.rows.append([temp])
-    table.rows.append([humidity])
-    table.rows.append([timezone])
-    table.rows.append([wind_speed])
-    table.rows.header = ["Clouds:", "Temperature:", "Humidity:", "Time Zone:" , "Wind Speed:"]
-    table.set_style(BeautifulTable.STYLE_BOX_ROUNDED)
-    print(table)
-    input()
-except:
-    print("")
-    print("-- City Not Found , Invalid Mode --")
-    input()
+    #get data API
+    condition = json_data['weather'][0]['main']
+    temp = int(json_data['main']['temp'] - 273.15)
+    min_temp = int(json_data['main']['temp_min'] - 273.15)
+    max_temp = int(json_data['main']['temp_max'] - 273.15)
+    pressure = json_data['main']['pressure']
+    humidity = json_data['main']['humidity']
+    wind = json_data['wind']['speed']
+    sunrise = time.strftime('%I:%M:%S', time.gmtime(json_data['sys']['sunrise'] - 21600))
+    sunset = time.strftime('%I:%M:%S', time.gmtime(json_data['sys']['sunset'] - 21600))
+
+    #output data
+    final_info = condition + "\n" + str(temp) + "°C" 
+    final_data = "\n"+ "Min Temp: " + str(min_temp) + "°C" + "\n" + "Max Temp: " + str(max_temp) + "°C" +"\n" + "Pressure: " + str(pressure) + "\n" +"Humidity: " + str(humidity) + "\n" +"Wind Speed: " + str(wind) + "\n" + "Sunrise: " + sunrise + "\n" + "Sunset: " + sunset
+    label1.config(text = final_info)
+    label2.config(text = final_data)
+
+
+#create canvas
+canvas = tk.Tk()
+canvas.geometry('600x500')
+canvas.title('Weather APP')
+
+#set font and size
+f = ('poppins', 16, 'bold')
+t = ('poppins', 35, 'bold')
+
+#create textfield to define city
+textField = tk.Entry(canvas, font = t)
+textField.pack(pady= 20)
+textField.focus()
+textField.bind('<Return>', getWeather)
+
+label1 = tk.Label(canvas, font = t)
+label1.pack()
+label2 = tk.Label(canvas, font = f)
+label2.pack()
+
+canvas.mainloop()
