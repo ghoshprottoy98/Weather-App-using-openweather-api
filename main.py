@@ -34,8 +34,12 @@ canvas.geometry('600x500')
 canvas.title('Weather APP')
 
 #set font and size
-f = ('poppins', 16, 'bold')
-t = ('poppins', 35, 'bold')
+f = ('arial', 16, 'bold')
+t = ('arial', 30, 'bold')
+s = ('arial', 20, 'bold')
+
+label3=tk.Label(canvas, font=s, text='Enter City Name Below')
+label3.pack() 
 
 #create textfield to define city
 textField = tk.Entry(canvas, font = t)
